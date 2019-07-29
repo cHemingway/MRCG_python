@@ -1,10 +1,6 @@
-import tensorflow as tf
-import numpy as np
 import MRCG
-import scipy.io.wavfile
 import os
 import librosa
-import wave
 import time
 
 script_path = os.path.dirname(os.path.abspath( __file__ ))

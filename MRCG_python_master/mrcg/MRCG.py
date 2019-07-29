@@ -7,9 +7,15 @@ except ImportError:
 from scipy.signal import lfilter
 import scipy.io as sio
 import time
+import os
 from scipy import signal
 
 epsc = 0.000001
+
+# Load loundness scaling matrix from same folder as this file
+SCRIPT_FOLDER = os.path.dirname(os.path.abspath( __file__ ))
+FMAT_PATH = os.path.join(SCRIPT_FOLDER,'f_af_bf_cf.mat')
+FMAT = sio.loadmat(FMAT_PATH)
 
 
 def mrcg_extract( sig, sampFreq = 16000):
@@ -99,11 +105,10 @@ def loudness(freq):
     # bf = [0.0056,0.0053,0.0048,0.0040,0.0038,0.0029,0.0026,0.0026,0.0026,0.0026,0.0025,0.0025,0.0023,0.0020,0.0016,0.0011,0.0005,0,-0.0004,-0.0007,-0.0009,-0.0010,-0.0010,-0.0009,-0.0006,0,0.0009,0.0021,0.0049]
     # cf = [74.3000,65.0000,56.3000,48.4000,41.7000,35.5000,29.8000,25.1000,20.7000,16.8000,13.8000,11.2000,8.9000,7.2000,6.0000,5.0000,4.4000,4.2000,3.7000, 2.6000, 1.0000,-1.2000,-3.6000,-3.9000,-1.1000,6.6000,15.3000,16.4000,11.6000]
     # ff = np.multiply([0.0020,0.0025,0.0032,0.0040,0.0050,0.0063,0.0080,0.0100,0.0125,0.0160,0.0200,0.0250,0.0315,0.0400,0.0500,0.0630,0.0800,0.1000,0.1250,0.1600,0.2000,0.2500,0.3150,0.4000,0.5000,0.6300,0.8000,1.0000,1.2500],10000)
-    fmat = sio.loadmat('f_af_bf_cf.mat')
-    af = fmat['af'][0]
-    bf = fmat['bf'][0]
-    cf = fmat['cf'][0]
-    ff = fmat['ff'][0]
+    af = FMAT['af'][0]
+    bf = FMAT['bf'][0]
+    cf = FMAT['cf'][0]
+    ff = FMAT['ff'][0]
     i = 0
     while ff[i] < freq:
         i = i + 1

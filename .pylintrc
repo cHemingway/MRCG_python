@@ -1,0 +1,3 @@
+[MESSAGES CONTROL]
+enable=W0614
+disable=invalid-name,missing-docstring

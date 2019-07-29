@@ -22,29 +22,15 @@ def mrcg_extract(sig, sampFreq=16000):
     beta = 1000 / np.sqrt(sum(map(lambda x: x*x, sig)) / len(sig))
     sig = sig*beta
     sig = sig.reshape(len(sig), 1)
-    t0 = time.clock()
     g = gammatone(sig, 64, sampFreq)
-    t1 = time.clock()
     cochlea1 = np.log10(cochleagram(
         g, int(sampFreq * 0.025), int(sampFreq * 0.010)))
-    t2 = time.clock()
     cochlea2 = np.log10(cochleagram(
         g, int(sampFreq * 0.200), int(sampFreq * 0.010)))
-    t3 = time.clock()
-    print('gamma total')
-    print(t1-t0)
-    print('coch1')
-    print(t2-t1)
-    print('coch2')
-    print(t3-t2)
     cochlea1 = cochlea1[:, :]
     cochlea2 = cochlea2[:, :]
-    t4 = time.clock()
     cochlea3 = get_avg(cochlea1, 5, 5)
     cochlea4 = get_avg(cochlea1, 11, 11)
-    t5 = time.clock()
-    print('get avg')
-    print(t5-t4)
     all_cochleas = np.concatenate([cochlea1, cochlea2, cochlea3, cochlea4], 0)
 
     del0 = deltas(all_cochleas)
@@ -81,11 +67,7 @@ def gammatone(insig, numChan=128, fs=16000):
     sig = np.reshape(insig, [sigLength, 1])
     gt2 = np.transpose(gt)
     resig = np.matlib.repmat(sig, 1, numChan)
-    t0 = time.clock()
     r = np.transpose(fftfilt(gt2, resig, numChan))
-    t1 = time.clock()
-    print('fftfilter')
-    print(t1-t0)
     return r
 
 

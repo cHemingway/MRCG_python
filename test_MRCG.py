@@ -15,7 +15,7 @@ class Test_mrcg(object):
 
     # Args to set tolerance for np.testing.assert_allclose
     tolerance_kwargs = {
-        'rtol': 1e-5, 
+        'rtol': 1e-7, 
         'atol': 0       # Don't check absolute tolerance, only relative
     }
 

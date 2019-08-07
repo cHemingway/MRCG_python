@@ -45,7 +45,7 @@ def mrcg_extract(sig, sampFreq=16000):
 def all_cochleagrams(g, sampFreq):
     ''' Get all cochleagrams '''
     cochlea1 = np.log10(cochleagram(
-        g, int(sampFreq * 0.025), int(sampFreq * 0.010)))
+        g, int(sampFreq * 0.020), int(sampFreq * 0.010)))
     cochlea2 = np.log10(cochleagram(
         g, int(sampFreq * 0.200), int(sampFreq * 0.010)))
     cochlea1 = cochlea1[:, :]

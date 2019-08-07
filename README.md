@@ -1,5 +1,6 @@
 # MRCG_python
 [![Build Status](https://travis-ci.com/cHemingway/MRCG_python.svg?branch=master)](https://travis-ci.com/cHemingway/MRCG_python)
+[![codecov](https://codecov.io/gh/cHemingway/MRCG_python/branch/master/graph/badge.svg)](https://codecov.io/gh/cHemingway/MRCG_python)
 
 Fork of [original port](https://github.com/MoongMoong/MRCG_python) from MATLAB by Jaeseok Kim.
 * Added unit tests to check against reference MATLAB implementation

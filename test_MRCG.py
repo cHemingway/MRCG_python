@@ -1,3 +1,8 @@
+# Unit tests for MRCG, comparing against reference implementation
+
+# Chris Hemingway 2019, MIT License
+# See LICENSE file for details
+
 import os
 import unittest
 import cProfile

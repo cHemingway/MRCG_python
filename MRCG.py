@@ -18,7 +18,7 @@ FMAT = sio.loadmat(FMAT_PATH)
 
 
 def get_beta(sig):
-    beta = 1000 / np.sqrt(sum(map(lambda x: x*x, sig)) / len(sig))
+    beta = 1000.0 / np.sqrt(np.mean((np.square(sig))))
     return beta
 
 

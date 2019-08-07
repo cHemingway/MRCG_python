@@ -147,23 +147,30 @@ class Test_mrcg_extract(Test_mrcg, unittest.TestCase):
 
     def plot_mrcg(self, mrcg, filename='mrcg_comparison.png'):
         ''' Utility function to save plot of our MRCG to a file '''
-        fig, (ref_ax, our_ax, diff_ax) = plt.subplots(1, 3, 
-                                                     sharex=True,
+        fig, (ref_ax, our_ax, diff_ax) = plt.subplots(nrows=1, ncols=3, 
                                                      sharey=True)
         fig.set_size_inches(10, 7)
         format_kwargs = {
             'cmap':'jet', # Use full range color map for clarity    
         }
         
-        ref_ax.imshow(self.mrcg, **format_kwargs)
+        ref_im = ref_ax.imshow(self.mrcg, **format_kwargs)
         ref_ax.set_title("MATLAB")
         our_ax.imshow(mrcg, **format_kwargs)
         our_ax.set_title("Python")
         
-        # Plot difference
+        # Plot relative difference
         diff = np.abs(self.mrcg - mrcg)
-        diff_ax.imshow(diff, **format_kwargs)
-        diff_ax.set_title("Differences")
+        diff_im = diff_ax.imshow(diff, **format_kwargs)
+        diff_ax.set_title("abs(MATLAB - Python)")
+
+        # Add colorbar to difference
+        diff_cbar = plt.colorbar(diff_im, ax=diff_ax, orientation='horizontal')
+        diff_cbar.set_label("Difference")
+
+        # Add colorbar for total value
+        cbar = plt.colorbar(ref_im, ax=[ref_ax,our_ax], orientation='horizontal')
+        cbar.set_label("Value")
 
         # Save figure, minimal padding/border
         plt.savefig(filename, bbox_inches='tight', pad_inches=0.5)

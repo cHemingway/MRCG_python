@@ -86,15 +86,26 @@ class Test_all_cochleagrams(Test_mrcg, unittest.TestCase):
         sig = sig.reshape(len(sig), 1)
         self.g = MRCG.gammatone(sig, 64, self.sampFreq)
 
-    def test_value(self):
+    def test_values(self):
         ''' Test all cochleagrams match MATLAB implementation '''
         # Get all cochleagrams and flatten
         c1, c2, c3, c4 = MRCG.all_cochleagrams(self.g, self.sampFreq)
-        all_cochleas = np.concatenate([c1, c2, c3, c4], 0)
         # Get what MATLAB generated
         good_all_cochleas = self.mrcg[0:self.all_coch_len]
-        # Compare
-        np.testing.assert_allclose(all_cochleas, good_all_cochleas)
+        # Compare each individually. Each are 64 wide
+        i = 0
+        errors = []
+        for c in [c1, c2, c3, c4]:
+            try:
+                np.testing.assert_allclose(c, good_all_cochleas[i:i+64],
+                                        err_msg = f"c{i//64 + 1}",
+                                        verbose=False)
+            except AssertionError as e:
+                errors.append(e)
+            i += 64
+        # Check if we got any errors
+        self.assertEqual(len(errors), 0, 
+            msg="mismatch" + "\n".join( [ str(e) for e in errors] ))
 
     def test_concat(self):
         ''' Test all_cochs are correctly concatanated into MRCG '''

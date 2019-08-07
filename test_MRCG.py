@@ -14,7 +14,10 @@ class Test_mrcg(object):
     ''' Base class for testing MRCG '''
 
     # Args to set tolerance for np.testing.assert_allclose
-    tolerance_kwargs = {'rtol': 1e-5, 'atol': 1e-6}
+    tolerance_kwargs = {
+        'rtol': 1e-5, 
+        'atol': 0       # Don't check absolute tolerance, only relative
+    }
 
     def setUp(self):
         script_path = os.path.dirname(os.path.abspath(__file__))
@@ -28,6 +31,11 @@ class Test_mrcg(object):
         mat_dict = scipy.io.matlab.loadmat(mat)
         self.mat_dict = mat_dict
         self.mrcg = self.mat_dict['mrcg']
+
+        # Define some constants
+        # Each cochleogram is 64 long, and we have 4 of them, so 4 * 64 = 256
+        # Note they are still 393 wide, which we do not explicitly state
+        self.all_coch_len = 256
 
 
 class Test_gammatone(Test_mrcg, unittest.TestCase):
@@ -67,9 +75,39 @@ class Test_beta(Test_mrcg, unittest.TestCase):
         # FIXME high tolerance of 0.1%, why?
         tolerance_kwargs = Test_mrcg.tolerance_kwargs
         tolerance_kwargs['rtol'] = 1e-04
-        tolerance_kwargs['atol'] = 0 # Check only relative tolerance, not abs
         np.testing.assert_allclose(good_beta, our_beta, **tolerance_kwargs)
 
+
+class Test_all_cochleagrams(Test_mrcg, unittest.TestCase):
+
+    def setUp(self):
+        super().setUp()
+        sig = self.audio
+        self.sampFreq = self.sr
+        beta = MRCG.get_beta(sig)
+        sig = sig*beta
+        sig = sig.reshape(len(sig), 1)
+        self.g = MRCG.gammatone(sig, 64, self.sampFreq)
+
+    def test_value(self):
+        ''' Test all cochleagrams match MATLAB implementation '''
+        # Get all cochleagrams and flatten
+        c1, c2, c3, c4 = MRCG.all_cochleagrams(self.g, self.sampFreq)
+        all_cochleas = np.concatenate([c1, c2, c3, c4], 0)
+        # Get what MATLAB generated
+        good_all_cochleas = self.mrcg[0:self.all_coch_len]
+        # Compare
+        np.testing.assert_allclose(all_cochleas, good_all_cochleas)
+
+    def test_concat(self):
+        ''' Test all_cochs are correctly concatanated into MRCG '''
+        # Could also have put this in Test_mrcg_extract instead
+        c1, c2, c3, c4 = MRCG.all_cochleagrams(self.g, self.sampFreq)
+        all_cochleas = np.concatenate([c1, c2, c3, c4], 0)
+        # Get MRCG, should be [all_cochleas; delta; delta2]
+        samp_mrcg = MRCG.mrcg_extract(self.audio, self.sr)
+        # Check they are _exactly_ equal, as concatanation should not modify
+        np.testing.assert_equal(all_cochleas, samp_mrcg[0:self.all_coch_len])
 
 
 class Test_mrcg_extract(Test_mrcg, unittest.TestCase):
@@ -85,6 +123,18 @@ class Test_mrcg_extract(Test_mrcg, unittest.TestCase):
         # Check size and values against original MATLAB code result
         self.assertEqual(self.mrcg.shape, samp_mrcg.shape)
         np.testing.assert_allclose(samp_mrcg, self.mrcg, **Test_mrcg.tolerance_kwargs)
+
+
+    def test_all_cochleas(self):
+        ''' Test cochleagrams in output are correct '''
+        samp_mrcg = MRCG.mrcg_extract(self.audio, self.sr)
+        good_all_cochleas = self.mrcg[0:self.all_coch_len]
+        our_all_cochleas = samp_mrcg[0:self.all_coch_len]
+
+        # Compare
+        np.testing.assert_allclose(our_all_cochleas, good_all_cochleas,
+                                   **Test_mrcg.tolerance_kwargs)
+
 
 
     def plot_mrcg(self, mrcg, filename='mrcg_comparison.png'):

@@ -1,5 +1,6 @@
 import os
 import unittest
+import cProfile
 
 import scipy.io.wavfile, scipy.io.matlab
 import numpy as np
@@ -111,4 +112,13 @@ class Test_mrcg_extract(Test_mrcg, unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    # If we call python -m cProfile test_MRCG.py, we get no tests!
+    # See https://stackoverflow.com/q/11645285
+    # So instead we include profiling in the script directly. Not ideal, but OK
+    pr = cProfile.Profile()
+    pr.enable()
+    try: # Wrap in try so we still save stats on exception
+        unittest.main()
+    finally: # We don't want to _catch_ the exception as that would hide it
+        pr.disable()
+        pr.dump_stats(__file__ + ".prof")

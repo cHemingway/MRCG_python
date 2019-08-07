@@ -108,3 +108,7 @@ class Test_mrcg_extract(Test_mrcg, unittest.TestCase):
 
         # Save figure, minimal padding/border
         plt.savefig(filename, bbox_inches='tight', pad_inches=0.5)
+
+
+if __name__ == "__main__":
+    unittest.main()

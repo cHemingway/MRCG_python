@@ -37,8 +37,8 @@ class Test_gammatone(Test_mrcg, unittest.TestCase):
 
         sig = self.audio
 
-        # TODO, don't recalculate beta, but use code
-        beta = 1000 / np.sqrt(sum(map(lambda x: x*x, sig)) / len(sig))
+        # Scale using beta as recommended
+        beta = MRCG.get_beta(sig)
         sig = sig*beta
         sig = sig.reshape(len(sig), 1)
 

@@ -116,12 +116,6 @@ def loudness(freq):
     return loud
 
 
-def nextpow2(x):
-    """Return the first integer N such that 2**N >= abs(x)"""
-
-    return np.ceil(np.log2(abs(x)))
-
-
 def fftfilt(b, x, nfft):
     fftflops = [18, 59, 138, 303, 660, 1441, 3150, 6875, 14952, 32373, 69762,
                 149647, 319644, 680105, 1441974, 3047619, 6422736, 13500637, 28311786,
@@ -211,30 +205,6 @@ def get_avg(m, v_span, h_span):
 
     out = signal.convolve2d(m, meanfil, boundary='fill',
                             fillvalue=0, mode='same')
-    return out
-
-
-def get_avg2(m, v_span, h_span):
-    nr, nc = np.shape(m)
-    out = np.zeros([nr, nc])
-    fil_size = (2 * v_span + 1) * (2 * h_span + 1)
-    for i in range(nr):
-        row_begin = 0
-        row_end = nr
-        col_begin = 0
-        col_end = nc
-        if (i - v_span) >= 0:
-            row_begin = i - v_span
-        if (i + v_span + 1) <= nr:
-            row_end = i + v_span + 1
-
-        for j in range(nc):
-            if (j - h_span) >= 0:
-                col_begin = j - h_span
-            if (j + h_span + 1) <= nc:
-                col_end = j + h_span + 1
-            tmp = m[row_begin:row_end, col_begin: col_end]
-            out[i, j] = sum(sum(tmp)) / fil_size
     return out
 
 

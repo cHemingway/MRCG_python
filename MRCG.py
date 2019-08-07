@@ -17,9 +17,14 @@ FMAT_PATH = os.path.join(SCRIPT_FOLDER, 'f_af_bf_cf.mat')
 FMAT = sio.loadmat(FMAT_PATH)
 
 
+def get_beta(sig):
+    beta = 1000 / np.sqrt(sum(map(lambda x: x*x, sig)) / len(sig))
+    return beta
+
+
 def mrcg_extract(sig, sampFreq=16000):
         ######original code######
-    beta = 1000 / np.sqrt(sum(map(lambda x: x*x, sig)) / len(sig))
+    beta = get_beta(sig)
     sig = sig*beta
     sig = sig.reshape(len(sig), 1)
     g = gammatone(sig, 64, sampFreq)

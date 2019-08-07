@@ -1,4 +1,3 @@
-
 language: python
 matrix:
   include:
@@ -10,7 +9,14 @@ matrix:
   - name: "Python 3.6 on Ubuntu Xenial"
     dist: xenial
     python: 3.6
-script: 
-  - coverage run test_MRCG.py
-script:
-  - bash <(curl -s https://codecov.io/bash)
+jobs:
+  include:
+    - stage: test
+      script: 
+      - coverage run test_MRCG.py
+    - stage: upload_coverage
+      script:
+      - bash <(curl -s https://codecov.io/bash)
+stages:
+  - test
+  - upload_coverage

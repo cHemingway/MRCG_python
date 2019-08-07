@@ -11,4 +11,4 @@ matrix:
     dist: xenial
     python: 3.6
 script: 
-  - codecov run test_MRCG.py
+  - coverage run test_MRCG.py

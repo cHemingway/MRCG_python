@@ -12,3 +12,5 @@ matrix:
     python: 3.6
 script: 
   - coverage run test_MRCG.py
+script:
+  - bash <(curl -s https://codecov.io/bash)

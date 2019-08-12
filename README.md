@@ -6,6 +6,7 @@ Fork of [original port](https://github.com/MoongMoong/MRCG_python) from MATLAB b
 * Added unit tests to check against reference MATLAB implementation
 * Restructured to make importable as submodule
 * Fixed slight issue, now matches MATLAB results very accurately
+* ~2.6x faster
 * Added some dotfiles (e.g. gitignore), license, and requirements.txt
 * Now requires Python 3.6+
 

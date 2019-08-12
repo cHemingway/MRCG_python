@@ -73,10 +73,8 @@ def gammatone(insig, numChan=128, fs=16000):
     tmp_t = np.arange(1, gL+1)/fs
     for i in range(numChan):
         gain = 10**((loudness(cf[i])-60)/20)/3*(2 * np.pi * b[i] / fs)**4
-        tmp_temp = [gain*(fs**3)*x**(filterOrder - 1)*np.exp(-2 * np.pi * b[i] * x)
-                    * np.cos(2 * np.pi * cf[i] * x + phase[i]) for x in tmp_t]
+        tmp_temp = gain*(fs**3)*tmp_t**(filterOrder - 1)*np.exp(-2 * np.pi * b[i] * tmp_t) * np.cos(2 * np.pi * cf[i] * tmp_t + phase[i])
         tmp_temp2 = np.reshape(tmp_temp, [1, gL])
-
         gt[i, :] = tmp_temp2
 
     sig = np.reshape(insig, [sigLength, 1])

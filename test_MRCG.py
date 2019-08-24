@@ -124,6 +124,14 @@ class Test_all_cochleagrams(Test_mrcg, unittest.TestCase):
         # Check they are _exactly_ equal, as concatanation should not modify
         np.testing.assert_equal(all_cochleas, samp_mrcg[0:self.all_coch_len])
 
+    def test_length(self):
+        ''' Test length of cochleogram window is correct '''
+        for length in [0.01, 0.02, 0.032, 0.064]:
+            c1, c2, _, _ = MRCG.all_cochleagrams(self.g, self.sampFreq, length)
+            win_length = int(length*self.sampFreq)
+            self.assertEqual(c1.shape[1], win_length,   'Incorrect CG1 length')
+            self.assertEqual(c2.shape[1], win_length*10, 'Incorrect CG2 length')
+
 
 class Test_mrcg_extract(Test_mrcg, unittest.TestCase):
 

@@ -207,8 +207,6 @@ if __name__ == "__main__":
     unittest_argv.append(extra)
     unittest_argv = [sys.argv[0]].append(unittest_argv)
 
-    print(args.unittest_args)
-
     if args.profile:
         pr = cProfile.Profile()
         print("Running profiler on unit tests")

@@ -22,10 +22,8 @@ def get_beta(sig):
     return beta
 
 
-
-
-def mrcg_extract(sig, sampFreq=16000, window_size=0.020):
-        ######original code######
+def mrcg_extract_components(sig, sampFreq=16000, window_size=0.020):
+    '''Extract individual components of the MRCG, not concatanated together'''
     beta = get_beta(sig)
     sig = sig*beta
     sig = sig.reshape(len(sig), 1)
@@ -37,9 +35,15 @@ def mrcg_extract(sig, sampFreq=16000, window_size=0.020):
     del0 = deltas(all_cochleas)
     ddel = deltas(deltas(all_cochleas, 5), 5)
 
-    ouotput = np.concatenate((all_cochleas, del0, ddel), 0)
+    return ([cochlea1, cochlea2, cochlea3, cochlea4], del0, ddel)
 
-    return ouotput
+
+def mrcg_extract(sig, sampFreq=16000, window_size=0.020):
+    ''' Extract the MRCG, fully concatanated into one vector '''
+    cochs, del0, ddel = mrcg_extract_components(sig, sampFreq, window_size)
+    all_cochleas = np.concatenate(cochs, 0)
+    output = np.concatenate((all_cochleas, del0, ddel), 0)
+    return output
 
 
 def all_cochleagrams(g, sampFreq, window_size=0.020):

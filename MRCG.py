@@ -22,14 +22,14 @@ def get_beta(sig):
     return beta
 
 
-def mrcg_extract_components(sig, sampFreq=16000, window_size=0.020):
+def mrcg_extract_components(sig, sampFreq=16000, window_time=0.020, window_len=None):
     '''Extract individual components of the MRCG, not concatanated together'''
     beta = get_beta(sig)
     sig = sig*beta
     sig = sig.reshape(len(sig), 1)
     g = gammatone(sig, 64, sampFreq)
 
-    cochlea1, cochlea2, cochlea3, cochlea4 = all_cochleagrams(g, sampFreq, window_size)
+    cochlea1, cochlea2, cochlea3, cochlea4 = all_cochleagrams(g, sampFreq, window_time, window_len)
     all_cochleas = np.concatenate([cochlea1, cochlea2, cochlea3, cochlea4], 0)
 
     del0 = deltas(all_cochleas)
@@ -38,23 +38,24 @@ def mrcg_extract_components(sig, sampFreq=16000, window_size=0.020):
     return ([cochlea1, cochlea2, cochlea3, cochlea4], del0, ddel)
 
 
-def mrcg_extract(sig, sampFreq=16000, window_size=0.020):
+def mrcg_extract(sig, sampFreq=16000, window_size=0.020, window_len=None):
     ''' Extract the MRCG, fully concatanated into one vector '''
-    cochs, del0, ddel = mrcg_extract_components(sig, sampFreq, window_size)
+    cochs, del0, ddel = mrcg_extract_components(sig, sampFreq, window_size, window_len)
     all_cochleas = np.concatenate(cochs, 0)
     output = np.concatenate((all_cochleas, del0, ddel), 0)
     return output
 
 
-def all_cochleagrams(g, sampFreq, window_size=0.020):
+def all_cochleagrams(g, sampFreq, window_size=0.020, window_len=None):
     ''' Get all cochleagrams '''
+    if not window_len:
+        window_len = int(sampFreq * window_size)
 
-    coch_shift = window_size / 2.0
-    coch2_size = window_size * 10.0
-    cochlea1 = np.log10(cochleagram(
-        g, int(sampFreq * window_size), int(sampFreq * coch_shift)))
-    cochlea2 = np.log10(cochleagram(
-        g, int(sampFreq * coch2_size), int(sampFreq * coch_shift)))
+    coch_shift = int(window_len / 2)
+    coch2_size = int(window_len * 10)
+
+    cochlea1 = np.log10(cochleagram(g,window_len , coch_shift))
+    cochlea2 = np.log10(cochleagram(g, coch2_size, coch_shift))
     cochlea1 = cochlea1[:, :]
     cochlea2 = cochlea2[:, :]
     cochlea3 = get_avg(cochlea1, 5, 5)

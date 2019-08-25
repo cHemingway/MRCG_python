@@ -129,7 +129,7 @@ class Test_all_cochleagrams(Test_mrcg, unittest.TestCase):
         for length in [0.01, 0.02, 0.032, 0.064]:
             c1, c2, _, _ = MRCG.all_cochleagrams(self.g, self.sampFreq, length)
             win_length = int(length*self.sampFreq)
-            self.assertEqual(c1.shape[1], win_length,   'Incorrect CG1 length')
+            self.assertEqual(c1.shape[1], win_length, 'Incorrect CG1 length')
             self.assertEqual(c2.shape[1], win_length*10, 'Incorrect CG2 length')
 
 
@@ -196,23 +196,27 @@ if __name__ == "__main__":
     # See https://stackoverflow.com/q/11645285
     # So instead we include profiling in the script directly. Not ideal
 
-    # To make the off by default, we parse the args to look if profiling is 
-    # enabled _before_ we call unittest.main(), and hide the arg from it
-    # See https://stackoverflow.com/a/44255084 for this trick
+    # Check for profiling, passing unknown arguments to unittest
     parser = argparse.ArgumentParser()
     parser.add_argument('--profile', action='store_true', default=False)
     parser.add_argument('unittest_args', nargs='*')
-    args = parser.parse_args()
-    sys.argv[1:] = args.unittest_args # Remove any args not for unittest
+    args, extra = parser.parse_known_args()
+
+    # Unittest argv is program name, then arguments
+    unittest_argv = args.unittest_args
+    unittest_argv.append(extra)
+    unittest_argv = [sys.argv[0]].append(unittest_argv)
+
+    print(args.unittest_args)
 
     if args.profile:
         pr = cProfile.Profile()
         print("Running profiler on unit tests")
         pr.enable()
         try: # Wrap in try so we still save stats on exception
-            unittest.main()
+            unittest.main(argv=unittest_argv)
         finally: # We don't want to _catch_ the exception as that would hide it
             pr.disable()
             pr.dump_stats(__file__ + ".prof")
     else:
-        unittest.main()
+        unittest.main(argv=unittest_argv)
